@@ -1,16 +1,17 @@
-# $ZIONIST - The Most Based Cabal on Solana Terminal
+# $SOLTER - The Most Advanced AI Terminal on Solana
 
-## Features
+## AI Features
+- 🤖 Bundle Detection (DeepSeek v3)
+- 📦 Multiple Transaction Analysis
+- 🔄 Cross-DEX Pattern Detection
 - 🎮 Terminal Breakout Game
-- 🤖 AI Bundle Checker (DeepSeek v3)
-- 📊 Real-time MEV Detection
-- 🔄 Cross-DEX Analysis
-- 🚀 Launch Countdown
 
 ## Tech Stack
-- Solana Web3.js
-- DeepSeek v3 AI Integration
-- Terminal-style UI
-- Mobile Responsive
+- Solana Web3.js Integration
+- Terminal-style Responsive UI
+- Canvas-based Game Engine
+- Basic Bundle Detection
+- Secure Anti-Bot Protection
+- LP Lock System
 
 ## Development

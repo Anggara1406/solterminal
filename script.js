@@ -5,9 +5,9 @@
     ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
     ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
     ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
-    ░   ZIONIST COIN - The Most Based Solana Cabal Token                  ░
-    ░   Copyright © 2025 0xHACKERS. All rights reserved.                 ░
-    ░   https://zionistcoin.com                                          ░
+    ░   SOLTER - The Most Advanced AI Terminal on Solana                  ░
+    ░   Copyright © 2025 SOLTER Labs. All rights reserved.               ░
+    ░   https://solterminal.io                                           ░
     ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
     `);
 
@@ -53,13 +53,16 @@
 })();
 
 // Single DOMContentLoaded event listener for both features
-document.addEventListener('DOMContentLoaded', () => {
-    // Initialize both features
+document.addEventListener('DOMContentLoaded', function() {
+    // Defer non-critical functions
+    setTimeout(() => {
+        initAIChat();
+        initFaq();
+        initAiInfoToggle();
+    }, 100);
+    
+    // Initialize game immediately as it's above the fold
     initBreakoutGame();
-    initAIChat();
-    initFaq();
-    initAiInfoToggle();
-    initializeCountdown();
 });
 
 // Add the complete Breakout game code
@@ -89,8 +92,8 @@ function initBreakoutGame() {
     let highScore = parseInt(localStorage.getItem('breakoutHighScore')) || 0;
     let animationFrameId;
     let lastTime = 0;
-    const FPS = 60;
-    const frameDelay = 1000 / FPS;
+    const fps = 60;
+    const interval = 1000 / fps;
     
     // Ball with improved physics
     const ball = {
@@ -143,6 +146,9 @@ function initBreakoutGame() {
         }
     }
     
+    // Add brick counter
+    let remainingBricks = brickRowCount * brickColumnCount;
+    
     // Improved drawing functions
     function drawBall() {
         ctx.beginPath();
@@ -178,7 +184,7 @@ function initBreakoutGame() {
         }
     }
     
-    // Enhanced collision detection
+    // Update collision detection
     function collisionDetection() {
         for(let c = 0; c < brickColumnCount; c++) {
             for(let r = 0; r < brickRowCount; r++) {
@@ -191,20 +197,14 @@ function initBreakoutGame() {
                         
                         ball.dy = -ball.dy;
                         b.status = 0;
+                        remainingBricks--;
                         score++;
+                        
+                        // Update score display
                         document.getElementById('score').textContent = score;
                         
-                        // Increase ball speed slightly
-                        ball.speed = Math.min(ball.speed * 1.05, ball.maxSpeed);
-                        
-                        if(score > highScore) {
-                            highScore = score;
-                            localStorage.setItem('breakoutHighScore', highScore);
-                            document.getElementById('highScore').textContent = highScore;
-                        }
-                        
-                        // Check win condition
-                        if(score === brickRowCount * brickColumnCount) {
+                        // Check win condition with actual remaining blocks
+                        if(remainingBricks === 0) {
                             alert('YOU WIN!');
                             resetGame();
                         }
@@ -215,11 +215,8 @@ function initBreakoutGame() {
     }
     
     // Improved game loop with frame timing
-    function draw(currentTime) {
-        if (!lastTime) lastTime = currentTime;
-        const elapsed = currentTime - lastTime;
-        
-        if (elapsed > frameDelay) {
+    function draw(timestamp) {
+        if (timestamp - lastTime >= interval) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
             drawBricks();
@@ -232,7 +229,7 @@ function initBreakoutGame() {
                 updatePaddlePosition();
             }
             
-            lastTime = currentTime;
+            lastTime = timestamp;
         }
         
         animationFrameId = requestAnimationFrame(draw);
@@ -246,13 +243,19 @@ function initBreakoutGame() {
         
         if(ball.y + ball.dy < ball.radius) {
             ball.dy = -ball.dy;
-        } else if(ball.y + ball.dy > canvas.height - ball.radius) {
-            if(ball.x > paddle.x && ball.x < paddle.x + paddle.width) {
+        } else if(ball.y + ball.dy > canvas.height - paddle.height - ball.radius) {
+            // Paddle collision check
+            if(ball.x > paddle.x - ball.radius && 
+               ball.x < paddle.x + paddle.width + ball.radius && 
+               ball.y < canvas.height - paddle.height) {
                 // Paddle hit - adjust angle based on hit position
-                const hitPos = (ball.x - paddle.x) / paddle.width;
-                ball.dx = ball.speed * (hitPos - 0.5) * 2;
-                ball.dy = -ball.speed;
-            } else {
+                const hitPoint = (ball.x - (paddle.x + paddle.width/2)) / (paddle.width/2);
+                ball.dx = ball.speed * hitPoint;
+                ball.dy = -ball.dy;
+                // Prevent ball from getting stuck in paddle
+                ball.y = canvas.height - paddle.height - ball.radius;
+            } else if(ball.y + ball.radius > canvas.height) {
+                // Ball missed paddle
                 lives--;
                 document.getElementById('lives').textContent = lives;
                 
@@ -261,7 +264,10 @@ function initBreakoutGame() {
                     resetGame();
                     return;
         } else {
-                    resetBall();
+                    ball.x = canvas.width/2;
+                    ball.y = canvas.height-30;
+                    ball.dx = ball.speed * (Math.random() * 2 - 1); // Random direction
+                    ball.dy = -ball.speed;
                 }
             }
         }
@@ -288,13 +294,15 @@ function initBreakoutGame() {
     function resetGame() {
         score = 0;
         lives = 3;
-        gameRunning = false;
         document.getElementById('score').textContent = score;
         document.getElementById('lives').textContent = lives;
-        document.getElementById('startGame').textContent = '[ PLAY ]';
         initBricks();
-        resetBall();
-        paddle.x = (canvas.width - paddle.width) / 2;
+        remainingBricks = brickRowCount * brickColumnCount;
+        ball.x = canvas.width/2;
+        ball.y = canvas.height-30;
+        ball.dx = window.innerWidth < 768 ? 3 : 5;
+        ball.dy = window.innerWidth < 768 ? -3 : -5;
+        paddle.x = (canvas.width - paddle.width)/2;
     }
     
     // Improved controls
@@ -616,29 +624,35 @@ function initAiInfoToggle() {
 }
 
 function initializeCountdown() {
-    // Set launch date to 8 PM UTC today
-    const now = new Date();
-    const launchDate = new Date();
-    launchDate.setUTCHours(20, 0, 0, 0); // 8 PM UTC
+    // Get or set the launch date in localStorage
+    let launchDate;
+    const storedLaunchDate = localStorage.getItem('solterLaunchDate');
     
-    // If it's already past 8 PM UTC today, set to tomorrow
-    if (now > launchDate) {
-        launchDate.setDate(launchDate.getDate() + 1);
+    if (!storedLaunchDate) {
+        // Initial setup - 20 hours from now
+        const now = new Date();
+        launchDate = new Date(now.getTime() + (20 * 60 * 60 * 1000));
+        // Store it
+        localStorage.setItem('solterLaunchDate', launchDate.getTime());
+    } else {
+        // Use stored date
+        launchDate = new Date(parseInt(storedLaunchDate));
     }
     
     function updateCountdown() {
         const currentTime = new Date();
         const diff = launchDate - currentTime;
         
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
         
-        document.getElementById('days').textContent = days.toString().padStart(2, '0');
-        document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
-        document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
-        document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+        // Only update if not expired
+        if (diff > 0) {
+            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+        }
         
         if (diff < 0) {
             clearInterval(timerInterval);
@@ -653,6 +667,9 @@ function initializeCountdown() {
     const timerInterval = setInterval(updateCountdown, 1000);
 }
 
+// Initialize countdown immediately when script loads
+initializeCountdown();
+
 // Improve mobile touch handling
 canvas.addEventListener('touchstart', handleTouch, { passive: false });
 canvas.addEventListener('touchmove', handleTouch, { passive: false });
@@ -666,5 +683,26 @@ userInput.addEventListener('focus', function() {
     setTimeout(() => {
         this.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 300);
+});
+
+function copyContract() {
+    const contractAddress = document.getElementById('contractAddress').textContent;
+    navigator.clipboard.writeText(contractAddress).then(() => {
+        const copyBtn = document.querySelector('.copy-btn');
+        copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+        setTimeout(() => {
+            copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
+        }, 2000);
+    });
+}
+
+let resizeTimeout;
+window.addEventListener('resize', function() {
+    if (!resizeTimeout) {
+        resizeTimeout = setTimeout(function() {
+            handleResize();
+            resizeTimeout = null;
+        }, 66);
+    }
 });
 
