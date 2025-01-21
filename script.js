@@ -6,7 +6,7 @@
     ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
     ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
     ░   SOLTER - The Most Advanced AI Terminal on Solana                  ░
-    ░   Copyright © 2025 SOLTER Labs. All rights reserved.               ░
+    ░   Copyright © 2025 0xHACKERS. All rights reserved.                ░
     ░   https://solterminal.io                                           ░
     ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
     `);
