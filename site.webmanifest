@@ -1,6 +1,6 @@
 {
-    "name": "SOLTER AI Terminal",
-    "short_name": "SOLTER",
+    "name": "KALIDERES AI Terminal",
+    "short_name": "KALIDERES",
     "description": "The Most Advanced AI Terminal on Solana",
     "start_url": "/",
     "display": "standalone",
