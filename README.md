@@ -1,3 +1,6 @@
+![Screenshot 2025-01-21 at 22-22-55 $SOLTER - The Most Advanced AI Terminal on Solana solterminal io](https://github.com/user-attachments/assets/093b2109-93de-4503-b8b4-a4c328dc0e09)
+
+
 # $SOLTER - The Most Advanced AI Terminal on Solana
 
 ## AI Features
